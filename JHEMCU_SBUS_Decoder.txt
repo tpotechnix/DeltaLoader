@@ -1,3 +1,6 @@
+8-Kanal SBUS decoder:
+https://www.aliexpress.com/item/4000073520891.html
+
 CPU: STM32F031K6
 
 STM32CubeProgrammer mit nucleo-Board (L476RG) als Programmer:
@@ -42,7 +45,7 @@ nucleo_f031k6 Board als Basis genommen.
 OpenOCD Config, damit das "halt" funktioniert:
 In File C:\Users\tpo\.platformio\packages\tool-openocd\scripts\board\st_nucleo_f0.cfg
 "reset_config srst_only" auf "reset_config none" ändern!!!!
-Scheint als ob er sonst glaubt, dass die RSET-Leitung angeschlossen ist...
+Scheint als ob er sonst glaubt, dass die RESET-Leitung angeschlossen ist...
 
 C:\Users\tpo\.platformio\packages\tool-openocd\scripts\target\stm32f0x.cfg
 "reset_config srst_nogate" auf "reset_config none" ändern.  Ev. ist das nicht notwendig??
