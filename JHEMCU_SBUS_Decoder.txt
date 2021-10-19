@@ -1,0 +1,53 @@
+CPU: STM32F031K6
+
+STM32CubeProgrammer mit nucleo-Board (L476RG) als Programmer:
+Read lockout ist gesetzt. Kann aber entfernt werden. Chip wird dabei gelöscht. Original-FW kann nicht ausgelesen werden.
+SWD-Pins sind ausgeführt. Achtung, unbedingt eine Masseleitung zwischen SWDIO und SWCLK im Flachbandkabel führen! 
+Ansonsten funktioniert das Connect zum Chip nicht (Crosstalk?).
+Write Protection war bei einem Sektor gesetzt. => gelöscht.
+
+Pin Mapping:
+-------------
+SBUS: Pin19 (100 Ohm) - PA9 - USART1_TX - Kann auf USART1_RX umgeschaltet werden.
+PPM:  Pin18 (100 Ohm) - PA8 - GPIO - Power on/off (grün)
+CH1:  Pin6  (100 Ohm) - PA0 - ADC - Batteriespannung (7V -> 2,25V -> 2715) (gelb)
+CH2:  Pin7  (100 Ohm) - PA1 - Frei0 (5V von BEC)
+CH3:  Pin8  (100 Ohm) - PA2 - GPIO - Licht
+CH4:  Pin9  (100 Ohm) - PA3 - USART1_RX->TX (DEBUG-Output (RX, TX vertauscht)) - Mit putty kann 100kbaud eingestellt werden beim FTDI-Chip!
+CH5:  Pin12 (100 Ohm) - PA6 - TIM3_CH1 - Schaufel
+CH6:  Pin13 (100 Ohm) - PA7 - TIM3_CH2 - Heben
+CH7:  Pin14 (100 Ohm) - PB0 - TIM3_CH3 - Motor links
+CH8:  Pin15 (100 Ohm) - PB1 - TIM3_CH4 - Motor rechts
+Led-SBUS: Pin30 (1 K) - PB7 - blau
+Led-PPM:  Pin32 (1 K) - PB8 - grün
+Led-3te:  Pin29 (1 K) - PB6 - rot
+
+Programming:
+braun: SWCLK
+rot: GND
+orange: SWDIO
+
+Beim Nucleo-Board 6-pin Header: ersten Pin von oben freilassen, dann braun, rot orange, auf die Pins 2, 3, 4. Pin 5, 6 bleibt wieder frei.
+
+Beim STM32 Cube Programmer "Mode" auf "Hot Plug" - oder sonst den PowerOn-Knopf gedrückt halten solange Verbunden ist.
+Debug in Low Power Mode wurde auch deaktiviert.
+
+Manchmal kommt keine Connection zustande. Alles Auschschalten, USB-Trennen, CubeProgrammer beenden. Dann nochmal versuchen. Ev. Einschaltreihenfolge ändern.
+
+CH1..8 sind ADC-fähige Eingänge.
+
+PlatformIO:
+nucleo_f031k6 Board als Basis genommen.
+
+OpenOCD Config, damit das "halt" funktioniert:
+In File C:\Users\tpo\.platformio\packages\tool-openocd\scripts\board\st_nucleo_f0.cfg
+"reset_config srst_only" auf "reset_config none" ändern!!!!
+Scheint als ob er sonst glaubt, dass die RSET-Leitung angeschlossen ist...
+
+C:\Users\tpo\.platformio\packages\tool-openocd\scripts\target\stm32f0x.cfg
+"reset_config srst_nogate" auf "reset_config none" ändern.  Ev. ist das nicht notwendig??
+
+https://community.platformio.org/t/debugging-custom-stm32-board/2613
+pio run -v -t upload
+
+pio run   im CLI eingeben dann wird nur gebaut

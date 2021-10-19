@@ -1,0 +1,90 @@
+Parallelführung:
+----------------
+
+Höhe h z.B. in mm. Ev. auch mehr Auflösung wählen.
+
+Tabelle mit drei Spalten:
+
+Höhe [mm] | Impuls Hubservo [us?] | Impuls Kippservo für Parallel [us?]
+   0           600                      1200
+  10           850                      1150
+  20           930                      1050
+...
+...
+ 200           1980                     600
+
+als Beispiel...
+
+Hubknüppel fährt Höhe auf und ab. Je nach Knüppel wird Höhe addiert/subtrahiert.
+Höhe wird auf auf Impulse umgesetzt.
+Bestimmen von Delta Impuls Kippservo. Dieses Delta konstant halten, bzw. verändern wenn die Schauel gekippt werden soll.
+Max. bei Kippservo berücksichten. Delta wird verändert.
+
+Linear interpolieren zwischen den Punkten.
+
+Kettenmischer:
+--------------
+
+v = 0,2 ... 1,0   (20..100%)
+
+OUT_L = GAS + v * LENK
+OUT_R = GAS - v * LENK
+
+ev. ist es bei Rückwärtsfahrt verkehrt.
+
+Für "seitenkorrekt" dann:
+if (GAS > 0)
+   OUT_L = GAS + v * LENK
+else   
+   OUT_L = GAS - v * LENK
+
+analog für OUT_R mit +/- vertauscht.
+
+Alle Werte z.B. GAS, LENK, OUT_L, OUT_R mit +/- Werte und 0 = neutral.
+Ev. Neutralpunkt lernen beim Einschalten, oder mittels Taster abspeichern... ?
+
+Problem bei Gas um den Nullpunkt und Lenken, dann springt die Lenkung um...
+Siehe https://fpv-community.de/threads/kettenfahrzeug-panzer-fpv.76621/
+=> Offenbar nur dann Umspringen wenn Gas < Mittel und Lenkung = Neutral.
+
+----
+Den aktuellen Softwarestand kenne ich nicht. Bei meinen Stellern war es ein einfacher Kreuzmischer, was aber auch gut so ist. Denn man braucht sonst einen recht großen Totbereich, damit die Steuerung nicht direkt um den Neutralpunkt umspringt. Das führt gerne mal zu Schwierigkeiten, wenn man gerne auf dem Teller dreht. Es gab mal eine Logik, die die Vorwärtsregelung so lange aufrecht erhält, wie Knüppel von neutral bis vorwärts und/oder der "Kurvenknüppel" aktiviert ist. Sobald rückwärts gegeben wird, is die Logik umgekehrt bei Drehung.
+In meinen Augen ist das Blödsinn, weil die Steuerung dann so oder so nicht linear läuft, sondern einen Umkehrpunkt hat.
+Ich hatte damals den 50A Sabertooth an Rollstuhlantrieben und 24V. Alles sauber fahrbar und sehr feinfühlig, trotz sehr hoher Belastung auf den Ketten bei Drehvorgängen und auch an Steigungen.
+----
+Danke für die Rückmeldung:
+Bei mir steht der Spieltrieb und die Programmierung im Vordergrund, reiner Kreuzmischer, Kreuzmischer mit Schaltlogik Vorwärts/Rückwärts, über Gaskurve korrigierte Lenkung (d.h. ohne Gas kein Lenken, trotzdem Drehen auf dem Teller möglich), seperate Ansteuerung der Antriebe, Limitieren der Lenkung bei Vollgas, alles vom Sender aus anwählbar...
+
+Jede Steuerungsvariante hat dabei ihre Vor und Nachteile, ich denke man muss sich nur für eine Variante entscheiden
+
+Ralf
+----
+
+Hier auch noch:
+https://fpv-community.de/threads/rover-spiegelverkehrte-steuerung-bei-r%C3%BCckw%C3%A4rtsfahrt.74982/
+
+
+Tennsy - NXP M0+ Mini Controller Board Arduino (36x17mm) - ca. 12 USD
+https://www.pjrc.com/store/teensylc.html
+
+SBUS - Bevorzugt derzeit:
+https://reefwing.medium.com/how-to-write-your-own-flight-controller-software-part-2-bc7f27214bb2
+Source:
+https://github.com/bolderflight/sbus/blob/main/src/sbus/sbus.cc
+https://os.mbed.com/users/Digixx/code/SBUS-Library_16channel/docs/83e415034198/FutabaSBUS_8cpp_source.html
+https://github.com/gerritv/SBUS-2/blob/master/SBUS.cpp
+
+IBUS:
+https://github.com/utkudarilmaz/FlySkyiBus/blob/master/src/FlySkyiBus.cpp
+https://github.com/VICLER/iBus/blob/master/src/iBus.cpp
+https://github.com/bmellink/IBusBM
+https://medium.com/@werneckpaiva/how-to-read-rc-signal-with-arduino-using-flysky-ibus-73448bc924eb
+
+Betaflight RX-codecs (iBUS, SBUS, ...):
+https://github.com/betaflight/betaflight/tree/master/src/main/rx  sbus.c und sbus_channels.c/.h
+
+FlySky Receiver - mit Rückkanal
+https://www.banggood.com/Flysky-X6B-2_4G-6CH-i-BUS-PPM-PWM-Receiver-for-AFHDS-i10-i6s-i6-i6x-i4x-Transmitter-p-1101513.html?imageAb=2&akmClientCountry=AT&p=TK13077353551201611V&akmClientCountry=AT&cur_warehouse=CZ
+
+PlatformIO example:
+https://docs.platformio.org/en/latest/tutorials/ststm32/stm32cube_debugging_unit_testing.html
